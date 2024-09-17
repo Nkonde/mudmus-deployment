@@ -23,3 +23,19 @@ jobs:
 
       - name: Build the application
         run: npm run build
+
+  create-pull-request:
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update build
+          branch: build-update
+          title: Update build
+          body: This PR updates the build process.
