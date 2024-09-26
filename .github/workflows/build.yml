@@ -24,12 +24,27 @@ jobs:
       - name: Build the application
         run: npm run build
 
- approval:
+  approval:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push'
-    environment: production  # Specify the environment with approval
+    environment: production  # Specify the environment that requires approval
 
     steps:
-    - name: Wait for approval
-      run: echo "Waiting for approval before deployment..."
+      - name: Wait for approval
+        run: echo "Waiting for approval before creating the pull request..."
+
+  create-pull-request:
+    needs: approval
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update build
+          branch: build-update
+          title: Update build
+          body: This PR updates the build process.
